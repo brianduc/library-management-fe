@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, ReactNode } from "react";
 import { jwtDecode } from "jwt-decode";
+import { Constants } from "@/lib/constants";
 
 interface AuthWrapperProps {
   children: ReactNode;
@@ -8,9 +9,9 @@ interface AuthWrapperProps {
 
 const AuthWrapper = ({ children }: AuthWrapperProps) => {
   const router = useRouter();
-
+  
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem(Constants.API_TOKEN_KEY);
     if (!token) {
       router.replace("/login");
       return;
@@ -20,16 +21,16 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
       const { exp } = jwtDecode<{ exp: number }>(token);
       // exp is in seconds
       if (Date.now() >= exp * 1000) {
-        localStorage.removeItem("token");
+        localStorage.removeItem(Constants.API_TOKEN_KEY);
         router.replace("/login");
       } else {
         router.replace("/dashboard");
       }
     } catch {
-      localStorage.removeItem("token");
+      localStorage.removeItem(Constants.API_TOKEN_KEY);
       router.replace("/login");
     }
-  }, [router]);
+  }, []);
 
   return <>{children}</>;
 };

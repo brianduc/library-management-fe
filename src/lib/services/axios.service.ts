@@ -3,15 +3,15 @@ import { Endpoints } from "@/lib/endpoints";
 import FailureResponse from "@/lib/services/response/FailureResponse";
 import SuccessResponse from "@/lib/services/response/SuccessResponse";
 import axios, { type AxiosInstance, AxiosError } from "axios";
-
 class AxiosService {
   private instance: AxiosInstance;
   private isRefreshing = false;
   private refreshQueue: Array<(token: string) => void> = [];
+  
 
   constructor() {
     this.instance = axios.create({
-      baseURL: process.env.API_URL,
+      baseURL: process.env.NEXT_PUBLIC_API_URL,
     });
 
     this.addInterceptors();
@@ -53,7 +53,6 @@ class AxiosService {
         return successResponse;
       }
 
-      case 202:
       case 400: {
         const failureResponse = new FailureResponse({
           code: response.status.toString(),
