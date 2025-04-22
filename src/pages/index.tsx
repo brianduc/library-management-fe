@@ -1,6 +1,7 @@
 import PageMetadata from "@/components/common/seo/page-metadata";
 
 export default function Home() {
+  
   return (
     <>
       <PageMetadata

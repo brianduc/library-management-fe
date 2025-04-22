@@ -25,6 +25,9 @@ import { useRouter } from "next/router";
 import { showErrorToast } from "@/components/common/toast/toast";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Loader2 } from "lucide-react";
+import { useSetAtom } from "jotai/react";
+import { userInfoAtom } from "@/stores/auth";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
@@ -41,6 +44,8 @@ export function LoginForm({
     resolver: zodResolver(formSchema),
   });
 
+  const setUserAtom = useSetAtom(userInfoAtom);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     await login(values.email, values.password)
       .then((response) => {
@@ -49,6 +54,7 @@ export function LoginForm({
             Constants.API_TOKEN_KEY,
             response.data.accessToken,
           );
+          setUserAtom(response.data.user);
           router.push("/dashboard");
         }
       })
@@ -125,9 +131,9 @@ export function LoginForm({
               </div>
               <div className="mt-4 text-center text-sm">
                 Bạn chưa có tài khoản?{" "}
-                <a href="/register" className="underline underline-offset-4">
+                <Link href="/register" className="underline underline-offset-4">
                   Đăng ký ngay
-                </a>
+                </Link>
               </div>
             </form>
           </Form>

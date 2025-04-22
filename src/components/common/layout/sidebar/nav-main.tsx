@@ -73,7 +73,11 @@ export function NavMain({
           }
           return (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title}>
+              <SidebarMenuButton
+                asChild
+                tooltip={item.title}
+                className={item.isActive ? "bg-black text-white hover:bg-black/75 hover:text-white" : ""}
+              >
                 <Link href={item.url} className="flex items-center w-full">
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
