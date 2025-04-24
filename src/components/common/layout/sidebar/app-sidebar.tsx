@@ -78,6 +78,14 @@ const data = {
     },
    
     {
+      name: "Borrowing",
+      url: "/borrow-request",
+      icon: Library,
+      title: "Quản lý yêu cầu mượn sách",
+      role: ["admin", "staff", "member"],
+    },
+
+    {
       name: "Books",
       url: "/books",
       icon: Book,
@@ -96,8 +104,8 @@ const data = {
       url: "/inventory",
       icon: Library,
       title: "Kho sách",
-      role: ["admin", "staff", "member"]
-    }
+      role: ["admin", "staff", "member"],
+    },
   ],
   projects: [
     {
