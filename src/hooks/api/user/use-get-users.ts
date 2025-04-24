@@ -12,6 +12,7 @@ export interface User {
   phone: string
   updatedAt: Date
   role: "staff" | "admin" | "member"
+  is_verified?: boolean
 }
 
 const useGetUsers = () => {

@@ -53,7 +53,7 @@ const AddUser = () => {
   })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await addUser({ data: { ...values, password: "firsttime123" } })
+    await addUser({ data: values })
       .then(() => {
         showSuccessToast("Thêm hội viên thành công!")
         router.push("/users")

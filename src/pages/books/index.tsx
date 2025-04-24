@@ -81,7 +81,7 @@ const SORT_ICONS = {
 
 const BookPage = () => {
   const { data, error, isLoading } = useGetBooks()
-  const { data: categories, error: categoryError } = useGetCategories()
+  const { data: categories } = useGetCategories()
   const { deleteBook, loading: deleting } = useDeleteBook()
   const [page, setPage] = React.useState(1)
   const [search, setSearch] = React.useState("")
