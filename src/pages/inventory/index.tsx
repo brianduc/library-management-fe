@@ -3,6 +3,7 @@ import useSWR from "swr"
 import { Endpoints } from "@/lib/endpoints"
 import { axiosFetcher } from "@/lib/utils"
 import { SearchIcon } from "lucide-react"
+import { useRouter } from "next/router"
 
 import {
   Card,
@@ -31,6 +32,7 @@ interface BookWithCategory extends Book {
 }
 
 const InventoryPage = () => {
+  const router = useRouter()
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState<string>("")
 
@@ -68,6 +70,10 @@ const InventoryPage = () => {
 
     return matchesSearch && matchesCategory
   })
+
+  const handleCardClick = (bookId: string) => {
+    router.push(`/inventory/${bookId}/view`)
+  }
 
   if (booksLoading) {
     return (
@@ -154,7 +160,11 @@ const InventoryPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {filteredBooks.map((book) => (
-            <Card key={book._id} className="overflow-hidden flex flex-col">
+            <Card 
+              key={book._id} 
+              className="overflow-hidden flex flex-col cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => handleCardClick(book._id)}
+            >
               <div className="h-48 bg-muted flex items-center justify-center">
                 {book.qr_code ? (
                   <img
@@ -164,7 +174,7 @@ const InventoryPage = () => {
                   />
                 ) : (
                   <div className="h-16 w-16 text-muted-foreground/30 flex items-center justify-center">
-                    <span className="text-sm">No Image</span>
+                    <span className="text-sm">Không có hình ảnh</span>
                   </div>
                 )}
               </div>
