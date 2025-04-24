@@ -49,7 +49,7 @@ const DatePicker = ({ date, onChange }: { date: Date | undefined; onChange: (dat
 }
 
 const BorrowRequestListByUserId = () => {
-  const { fetchBorrowRequestByUserId, borrowRequests, loading } = useGetAllBorrowRequestByUserId("680298de917372c550c93462")
+  const { fetchBorrowRequestByUserId, borrowRequests, loading } = useGetAllBorrowRequestByUserId()
 
   const [searchTerm, setSearchTerm] = useState<string>("")
   const [startDate, setStartDate] = useState<Date>()
@@ -227,7 +227,7 @@ const BorrowRequestListByUserId = () => {
 
   return (
     <div className="container mx-auto py-4">
-      <h2 className="text-2xl font-bold mb-4">Danh sách yêu cầu mượn sách</h2>
+      <h2 className="text-2xl font-bold mb-4">Lịch sử yêu cầu mượn sách</h2>
 
       <div className="mb-4 flex justify-between items-center w-full">
         <Input
@@ -349,22 +349,6 @@ const BorrowRequestListByUserId = () => {
                     </TableCell>
                     <TableCell>
                       {request.rejected_date ? new Date(request.rejected_date).toLocaleString() : "-"}
-                    </TableCell>
-                    <TableCell className="space-x-2">
-                      {request.status === "pending" && (
-                        <>
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-700 text-white"                       
-                          >
-                            Duyệt
-                          </Button>
-                          <Button variant="destructive" size="sm" >                          
-                            Từ chối
-                          </Button>
-                        </>
-                      )}
                     </TableCell>
                   </TableRow>
                 ))}

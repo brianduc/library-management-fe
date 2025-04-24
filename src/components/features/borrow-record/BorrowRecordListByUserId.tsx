@@ -232,7 +232,7 @@ const BorrowRecordListByUserId = () => {
 
   return (
     <div className="container mx-auto py-4">
-      <h2 className="text-2xl font-bold mb-4">Theo dõi tình trạng mượn - trả sách</h2>
+      <h2 className="text-2xl font-bold mb-4">Lịch sử mượn - trả sách</h2>
 
       <div className="mb-4 flex justify-between items-center w-full">
         <Input

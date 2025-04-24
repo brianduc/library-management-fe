@@ -27,6 +27,7 @@ import { useEditBook } from "@/hooks/api/book/use-edit-book"
 import { showErrorToast, showSuccessToast } from "@/components/common/toast/toast"
 import useGetCategories from "@/hooks/api/category/use-get-categories"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import uploadFile from "@/helpers/uploadFile"
 
 export const bookSchema = z.object({
   title: z.string().min(1, "Tiêu đề là bắt buộc").optional(),
@@ -38,6 +39,8 @@ export const bookSchema = z.object({
   is_hidden: z.boolean().optional(),
   category_id: z.string().min(1, "Danh mục là bắt buộc").optional(),
   qr_code: z.string().optional(),
+  image_url: z.string().optional(),
+
 })
 
 export type BookData = z.infer<typeof bookSchema>
@@ -47,7 +50,8 @@ const EditBook = () => {
   const { id } = router.query
   const { data: book, isLoading, error } = useGetBookById(id as string)
   const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useGetCategories()
-  const { editBook } = useEditBook()
+  const { editBook } = useEditBook();
+  const [image, setImage] = React.useState<File | null>(null)
 
   const form = useForm<BookData>({
     resolver: zodResolver(bookSchema),
@@ -105,19 +109,30 @@ const EditBook = () => {
     )
   }
 
-  const onSubmit = (values: BookData) => {
-    editBook({ id: id as string, data: values })
-      .then(() => {
-        showSuccessToast("Cập nhật sách thành công")
-        router.push("/books")
-      })
-      .catch((error) => {
-        showErrorToast(
-          error?.response?.data?.message ||
-            error?.message ||
-            "Có lỗi xảy ra, vui lòng thử lại sau",
-        )
-      })
+  const onSubmit = async (values: BookData) => {
+    try {
+      let imageUrl = values.image_url || ""
+      if (image) {
+        const uploadResult = await uploadFile(image)
+        imageUrl = uploadResult.secure_url
+      }
+
+      const payload = {
+        ...values,
+        image_url: imageUrl,
+      }
+      console.log("payload: ", payload)
+
+      await editBook({ id: id as string, data: payload })
+      showSuccessToast("Cập nhật sách thành công")
+      router.push("/books")
+    } catch (error: any) {
+      showErrorToast(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Có lỗi xảy ra, vui lòng thử lại sau"
+      )
+    }
   }
 
   return (
@@ -166,6 +181,35 @@ const EditBook = () => {
             </FormItem>
           )}
         />
+        {/* Image Preview and Update */}
+        <FormItem>
+          <FormLabel>Ảnh bìa</FormLabel>
+          <FormControl>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  setImage(e.target.files[0])
+                }
+              }}
+            />
+          </FormControl>
+        </FormItem>
+        {image && (
+          <img
+            src={URL.createObjectURL(image)}
+            alt="Preview"
+            className="h-40 object-cover mt-2 rounded"
+          />
+        )}
+        {book.image_url && !image && (
+          <img
+            src={book.image_url}
+            alt="Current Book Cover"
+            className="h-40 object-cover mt-2 rounded"
+          />
+        )}
         <FormField
           control={form.control}
           name="quantity_total"
@@ -215,9 +259,8 @@ const EditBook = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="available">Sẵn có</SelectItem>
-                    <SelectItem value="borrowed">Đã mượn</SelectItem>
                     <SelectItem value="damaged">Hư hỏng</SelectItem>
-                    <SelectItem value="lost">Mất</SelectItem>
+                   <SelectItem value="out_of_stock">Hết hàng</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>

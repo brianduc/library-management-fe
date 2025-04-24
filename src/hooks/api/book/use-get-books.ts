@@ -11,6 +11,7 @@ export interface Book {
   status: "available" | "borrowed" | "damaged" | "lost" | "out_of_stock";
   qr_code?: string;
   description?: string;
+  image_url?: string;
   is_hidden: boolean;
   createdAt: string;
   updatedAt: string;
