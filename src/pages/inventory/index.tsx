@@ -25,6 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Book } from "@/hooks/api/book/use-get-books"
 import useGetCategories from "@/hooks/api/category/use-get-categories"
+import { useRouter } from "next/router"
 
 interface BookWithCategory extends Book {
   categoryName?: string
@@ -33,13 +34,19 @@ interface BookWithCategory extends Book {
 const InventoryPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState<string>("")
+  const router = useRouter()
 
   // Fetch books data
   const {
     data: booksData,
     error: booksError,
     isLoading: booksLoading,
-  } = useSWR<{ books: Book[], totalBooks: number, totalPages: number, currentPage: number }>(Endpoints.Books.GET_ALL, axiosFetcher)
+  } = useSWR<{
+    books: Book[]
+    totalBooks: number
+    totalPages: number
+    currentPage: number
+  }>(Endpoints.Books.GET_ALL, axiosFetcher)
 
   // Fetch categories data
   const {
@@ -49,12 +56,13 @@ const InventoryPage = () => {
   } = useGetCategories()
 
   // Process books data to include category names
-  const books: BookWithCategory[] = booksData?.books?.map((book) => ({
-    ...book,
-    categoryName:
-      categories?.find((cat) => cat._id === book.category_id)?.name ||
-      "Không có danh mục",
-  })) || []
+  const books: BookWithCategory[] =
+    booksData?.books?.map((book) => ({
+      ...book,
+      categoryName:
+        categories?.find((cat) => cat._id === book.category_id)?.name ||
+        "Không có danh mục",
+    })) || []
 
   // Filter books based on search and category filters
   const filteredBooks = books.filter((book) => {
@@ -154,7 +162,11 @@ const InventoryPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {filteredBooks.map((book) => (
-            <Card key={book._id} className="overflow-hidden flex flex-col">
+            <Card
+              key={book._id}
+              className="overflow-hidden flex flex-col cursor-pointer"
+              onClick={() => router.push(`/books/${book._id}/view`)}
+            >
               <div className="h-48 bg-muted flex items-center justify-center">
                 {book.qr_code ? (
                   <img
