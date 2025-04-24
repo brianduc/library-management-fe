@@ -12,6 +12,7 @@ export class Endpoints {
     UPDATE: (id: string) => `fines/${id}`,
     DELETE: (id: string) => `fines/${id}`,
     PATCH: (id: string) => `fines/${id}/pay`,
+    GET_BY_USER: "fines/me",
   }
 
   static readonly Users = {
