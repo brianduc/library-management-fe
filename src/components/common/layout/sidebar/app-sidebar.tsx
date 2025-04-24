@@ -8,7 +8,9 @@ import {
   Map,
   PieChart,
   SquareTerminal,
-  Book
+  Book,
+  BookOpen, 
+  Library 
 } from "lucide-react"
 
 import { NavMain } from "@/components/common/layout/sidebar/nav-main"
@@ -22,7 +24,6 @@ import {
 } from "@/components/ui/sidebar"
 import Image from "next/image"
 
-// This is sample data.
 const data = {
   user: {
     name: "shadcn",
@@ -46,7 +47,7 @@ const data = {
       plan: "Free",
     },
   ],
-  // Navigation items for the sidebar
+
   navMain: [
     {
       name: "Dashboard",
@@ -69,8 +70,14 @@ const data = {
     {
       name: "Categories",
       url: "/categories",
-      icon: Book,
+      icon: BookOpen,
       title: "Quản lý danh mục",
+    },
+    {
+      name: "Inventory",
+      url: "/inventory",
+      icon: Library,
+      title: "Kho sách",
     }
   ],
   projects: [
