@@ -3,9 +3,6 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { useGetAllBorrowRequest } from "@/hooks/api/borrow-request/use-getAllBorrowRequest"
-import { useApproveBorrowRequest } from "@/hooks/api/borrow-request/use-approvedBorrowRequest"
-import { useRejectBorrowRequest } from "@/hooks/api/borrow-request/use-rejectedBorrowRequest"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Check, Clock, X, ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
@@ -22,15 +19,7 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/components/ui/pagination"
-import { showErrorToast, showSuccessToast } from "@/components/common/toast/toast"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { useGetAllBorrowRequestByUserId } from "@/hooks/api/borrow-request/use-getAllBorrowRequestByUserId"
 
 type SortDirection = "asc" | "desc" | null
 type SortColumn =
@@ -59,15 +48,13 @@ const DatePicker = ({ date, onChange }: { date: Date | undefined; onChange: (dat
   )
 }
 
-const BorrowRequestList = () => {
-  const { fetchBorrowRequests, borrowRequests, loading } = useGetAllBorrowRequest()
-  const { approveRequest } = useApproveBorrowRequest()
-  const { rejectRequest } = useRejectBorrowRequest()
+const BorrowRequestListByUserId = () => {
+  const { fetchBorrowRequestByUserId, borrowRequests, loading } = useGetAllBorrowRequestByUserId("680298de917372c550c93462")
 
   const [searchTerm, setSearchTerm] = useState<string>("")
   const [startDate, setStartDate] = useState<Date>()
   const [endDate, setEndDate] = useState<Date>()
-  const [statusFilter, setStatusFilter] = useState("pending")
+  const [statusFilter, setStatusFilter] = useState("all")
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
@@ -76,42 +63,10 @@ const BorrowRequestList = () => {
   const [sortColumn, setSortColumn] = useState<SortColumn>(null)
   const [sortDirection, setSortDirection] = useState<SortDirection>(null)
 
-  // Modal-related state
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedRequest, setSelectedRequest] = useState<any>(null)
-
   useEffect(() => {
-    fetchBorrowRequests()
+    fetchBorrowRequestByUserId()
   }, [])
 
-  const handleApprove = async (id: string) => {
-    try {
-      const res = await approveRequest(id)
-      showSuccessToast(res.message)
-      fetchBorrowRequests()
-    } catch (error: any) {
-      showErrorToast(error?.response?.data?.message || error?.message || "Có lỗi xảy ra, vui lòng thử lại sau")
-    }
-  }
-
-  const handleReject = async (request: any) => {
-    setSelectedRequest(request)
-    setIsModalOpen(true)
-  }
-
-  const confirmReject = async () => {
-    if (!selectedRequest) return
-    try {
-      const res = await rejectRequest(selectedRequest._id)
-      showSuccessToast(res.message)
-      fetchBorrowRequests()
-    } catch (error: any) {
-      showErrorToast(error?.response?.data?.message || error?.message || "Có lỗi xảy ra, vui lòng thử lại sau")
-    } finally {
-      setIsModalOpen(false)
-      setSelectedRequest(null)
-    }
-  }
 
   // Handle column sort
   const handleSort = (column: SortColumn) => {
@@ -193,9 +148,7 @@ const BorrowRequestList = () => {
 
     const isMatchingSearch =
       request.book_id.title.toLowerCase().includes(searchLowerCase) ||
-      request.book_id.author.toLowerCase().includes(searchLowerCase) ||
-      request.user_id.full_name.toLowerCase().includes(searchLowerCase) ||
-      request.user_id.email.toLowerCase().includes(searchLowerCase)
+      request.book_id.author.toLowerCase().includes(searchLowerCase) 
 
     const isInDateRange = (!startDate || requestDate >= startDate) && (!endDate || requestDate <= endDate)
 
@@ -217,10 +170,6 @@ const BorrowRequestList = () => {
         return ((a.book_id?.title || "") > (b.book_id?.title || "") ? 1 : -1) * direction
       case "bookAuthor":
         return ((a.book_id?.author || "") > (b.book_id?.author || "") ? 1 : -1) * direction
-      case "userName":
-        return ((a.user_id?.full_name || "") > (b.user_id?.full_name || "") ? 1 : -1) * direction
-      case "userEmail":
-        return ((a.user_id?.email || "") > (b.user_id?.email || "") ? 1 : -1) * direction
       case "status":
         return (getStatusValue(a.status) - getStatusValue(b.status)) * direction
       case "request_date":
@@ -283,7 +232,7 @@ const BorrowRequestList = () => {
       <div className="mb-4 flex justify-between items-center w-full">
         <Input
           type="text"
-          placeholder="Tìm kiếm theo tên sách, tác giả, người mượn, email..."
+          placeholder="Tìm kiếm theo tên sách, tác giả"
           className="w-full max-w-xl px-4 py-2 border rounded-md"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -348,13 +297,13 @@ const BorrowRequestList = () => {
                       {getSortIcon("bookAuthor")}
                     </div>
                   </TableHead>
-                  <TableHead className="cursor-pointer hover:bg-gray-100" onClick={() => handleSort("userName")}>
+                  <TableHead className="cursor-pointer hover:bg-gray-100" >
                     <div className="flex items-center">
                       Người mượn
                       {getSortIcon("userName")}
                     </div>
                   </TableHead>
-                  <TableHead className="cursor-pointer hover:bg-gray-100" onClick={() => handleSort("userEmail")}>
+                  <TableHead className="cursor-pointer hover:bg-gray-100" >
                     <div className="flex items-center">
                       Email
                       {getSortIcon("userEmail")}
@@ -384,7 +333,6 @@ const BorrowRequestList = () => {
                       {getSortIcon("rejected_date")}
                     </div>
                   </TableHead>
-                  <TableHead>Hành động</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -408,14 +356,11 @@ const BorrowRequestList = () => {
                           <Button
                             variant="secondary"
                             size="sm"
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                            onClick={() => handleApprove(request._id)}
+                            className="bg-green-600 hover:bg-green-700 text-white"                       
                           >
-                            <Check className="mr-1 h-4 w-4" />
                             Duyệt
                           </Button>
-                          <Button variant="destructive" size="sm" onClick={() => handleReject(request)}>
-                            <X className="mr-1 h-4 w-4" />
+                          <Button variant="destructive" size="sm" >                          
                             Từ chối
                           </Button>
                         </>
@@ -449,58 +394,8 @@ const BorrowRequestList = () => {
           <PaginationNext onClick={() => handlePageChange(currentPage + 1)} />
         )}
       </Pagination>
-
-      {/* Improved Reject Confirmation Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <X className="h-5 w-5 text-red-500" />
-              Xác nhận từ chối
-            </DialogTitle>
-            <DialogDescription>Bạn có chắc chắn muốn từ chối yêu cầu mượn sách này?</DialogDescription>
-          </DialogHeader>
-
-          {selectedRequest && (
-            <div className="py-4">
-              <div className="rounded-lg border p-4 space-y-3">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm font-medium">Tên sách:</div>
-                  <div>{selectedRequest.book_id.title}</div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm font-medium">Tác giả:</div>
-                  <div>{selectedRequest.book_id.author}</div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm font-medium">Người mượn:</div>
-                  <div>{selectedRequest.user_id.full_name}</div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm font-medium">Email:</div>
-                  <div>{selectedRequest.user_id.email}</div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm font-medium">Ngày yêu cầu:</div>
-                  <div>{new Date(selectedRequest.request_date).toLocaleString()}</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <DialogFooter className="sm:justify-end">
-            <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
-              Hủy
-            </Button>
-            <Button type="button" variant="destructive" onClick={confirmReject}>
-              <X className="mr-1 h-4 w-4" />
-              Xác nhận từ chối
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
 
-export default BorrowRequestList
+export default BorrowRequestListByUserId
