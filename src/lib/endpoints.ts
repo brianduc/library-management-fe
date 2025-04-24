@@ -13,7 +13,13 @@ export class Endpoints {
     DELETE: (id: string) => `fines/${id}`,
     PATCH: (id: string) => `fines/${id}/pay`,
   }
-
+  static readonly Review = {
+    CREATE: "reviews",      
+    GET_BY_USER_BY_BOOK_ID: (id: string) => `reviews/book/${id}/user`,  
+    GET_ALL: (id: string) => `reviews/book/${id}`,
+    UPDATE: (id: string) => `reviews/${id}`,
+    DELETE: (id: string) => `reviews/${id}`,
+  }
   static readonly Users = {
     GET_ALL: "users",
     GET_ALLV2: "users/v2",
