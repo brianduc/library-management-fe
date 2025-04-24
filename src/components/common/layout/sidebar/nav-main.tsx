@@ -43,7 +43,7 @@ export function NavMain({
     <SidebarGroup>
       <SidebarMenu>
         {items
-          ?.filter((item) => item.role.includes(userRole!))
+          ?.filter((item) => userRole && item.role.includes(userRole || ""))
           .map((item) => {
             // Determine if the main item is active
             const isActive = pathname && item.url && pathname.includes(item.url)

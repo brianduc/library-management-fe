@@ -8,7 +8,7 @@ import {
   Map,
   PieChart,
   SquareTerminal,
-  Book
+  Book,
 } from "lucide-react"
 
 import { NavMain } from "@/components/common/layout/sidebar/nav-main"
@@ -21,14 +21,11 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import Image from "next/image"
+import { useAtomValue } from "jotai/react"
+import { userInfoAtom } from "@/stores/auth"
 
 // This is sample data.
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   teams: [
     {
       name: "Acme Inc",
@@ -74,13 +71,15 @@ const data = {
       url: "/books",
       icon: Book,
       title: "Quản lý sách",
+      role: ["admin", "staff"],
     },
     {
       name: "Categories",
       url: "/categories",
       icon: Book,
       title: "Quản lý danh mục",
-    }
+      role: ["admin", "staff"],
+    },
   ],
   projects: [
     {
@@ -102,6 +101,13 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const userData = useAtomValue(userInfoAtom)
+  const user = {
+    name: userData?.full_name || "Nguyễn Văn A",
+    email: userData?.email || "default@example.com",
+    avatar: "https://picsum.photos/200",
+  }
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -116,7 +122,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
