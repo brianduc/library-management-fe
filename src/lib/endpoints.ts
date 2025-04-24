@@ -4,12 +4,12 @@ export class Endpoints {
     LOGIN: "auth/login",
     LOGOUT: "auth/logout",
     REFRESH: "auth/refresh",
-  };
-
-  static readonly BorrowRequest = {
-    API: "borrow-requests/",
-  };
-  static readonly BorrowRecord = {
-    API: "borrow-records/",
-  };
+  }
+  static readonly Users = {
+    GET_ALL: "users",
+    GET_BY_ID: (id: string) => `users/${id}`,
+    CREATE: "users",
+    UPDATE: (id: string) => `users/${id}`,
+    DELETE: (id: string) => `users/${id}`,
+  }
 }

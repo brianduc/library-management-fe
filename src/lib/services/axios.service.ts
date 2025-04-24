@@ -2,6 +2,7 @@ import { Constants } from "@/lib/constants";
 import { Endpoints } from "@/lib/endpoints";
 import FailureResponse from "@/lib/services/response/FailureResponse";
 import SuccessResponse from "@/lib/services/response/SuccessResponse";
+import { logout } from "@/lib/utils";
 import axios, { type AxiosInstance, AxiosError } from "axios";
 class AxiosService {
   private instance: AxiosInstance;
@@ -118,9 +119,7 @@ class AxiosService {
    * Handle logout by clearing tokens and redirecting to login
    */
   private handleLogout() {
-    localStorage.removeItem(Constants.API_TOKEN_KEY);
-    localStorage.removeItem(Constants.API_REFRESH_TOKEN_KEY);
-    window.location.href = "/login";
+    logout();
   }
 
   /**
