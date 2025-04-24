@@ -52,12 +52,21 @@ const data = {
       url: "/dashboard",
       icon: SquareTerminal,
       title: "Dashboard",
+      role: ["admin", "staff", "member"],
     },
     {
       name: "Users",
       url: "/users",
       icon: Bot,
       title: "Quản lý hội viên",
+      role: ["admin"],
+    },
+    {
+      name: "Borrow Record",
+      url: "/borrow-record",
+      icon: AudioWaveform,
+      title: "Quản lý lịch sử mượn",
+      role: ["admin", "staff"],
     },
   ],
   projects: [
