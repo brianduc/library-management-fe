@@ -3,12 +3,9 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { useGetAllBorrowRecord } from "@/hooks/api/borrow-record/use-getAllBorrowRecord"
-import { useReturnBook } from "@/hooks/api/borrow-record/use-returnBook"
-
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Check, Clock, BookOpen, User, AlertCircle, ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
+import { Check, Clock, ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { format } from "date-fns"
@@ -22,15 +19,7 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/components/ui/pagination"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { showErrorToast, showSuccessToast } from "@/components/common/toast/toast"
+import { useGetBorrowRecordByUserId } from "@/hooks/api/borrow-record/use-getBorrowRecordByUserId"
 
 // Define sort types
 type SortDirection = "asc" | "desc" | null
@@ -61,14 +50,14 @@ const DatePicker = ({ date, onChange }: { date: Date | undefined; onChange: (dat
   )
 }
 
-const BorrowRecordList = () => {
-  const { fetchBorrowRecord, borrowRecords, loading } = useGetAllBorrowRecord()
-  const { returnBook } = useReturnBook()
+const BorrowRecordListByUserId = () => {
+  const { fetchBorrowRecordByUserId, borrowRecords, loading } = useGetBorrowRecordByUserId()
 
+  console.log("fetchBorrowRecordByUserId",fetchBorrowRecordByUserId)
   const [searchTerm, setSearchTerm] = useState<string>("")
   const [startDate, setStartDate] = useState<Date>()
   const [endDate, setEndDate] = useState<Date>()
-  const [isReturnedFilter, setIsReturnedFilter] = useState<string>("not_returned")
+  const [isReturnedFilter, setIsReturnedFilter] = useState<string>("all")
   const [overdueFilter, setOverdueFilter] = useState<string>("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
@@ -77,11 +66,8 @@ const BorrowRecordList = () => {
   const [sortColumn, setSortColumn] = useState<SortColumn>(null)
   const [sortDirection, setSortDirection] = useState<SortDirection>(null)
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedRecord, setSelectedRecord] = useState<any>(null)
-
   useEffect(() => {
-    fetchBorrowRecord()
+    fetchBorrowRecordByUserId()
   }, [])
 
   const getReturnBadge = (isReturned: boolean) => {
@@ -95,27 +81,6 @@ const BorrowRecordList = () => {
       </Badge>
     )
   }
-
-  const handleReturnBook = (record: any) => {
-    setSelectedRecord(record)
-    setIsModalOpen(true)
-  }
-
-  const confirmReturnBook = async () => {
-    if (!selectedRecord) return
-
-    try {
-      const res = await returnBook(selectedRecord._id)
-      showSuccessToast(res.message)
-      fetchBorrowRecord()
-    } catch (error: any) {
-      showErrorToast(error?.response?.data?.message || error?.message || "Có lỗi xảy ra, vui lòng thử lại sau")
-    } finally {
-      setIsModalOpen(false)
-      setSelectedRecord(null)
-    }
-  }
-
   const getOverdueStatus = (record: any) => {
     const dueDate = new Date(record.due_date)
     let isOverdue = false
@@ -413,15 +378,6 @@ const BorrowRecordList = () => {
                       <TableCell>{record.return_date ? new Date(record.return_date).toLocaleString() : "-"}</TableCell>
                       <TableCell className="flex items-center gap-2">
                         {getReturnBadge(record.is_returned)}
-                        {!record.is_returned && (
-                          <Button
-                            size="sm"
-                            className="bg-blue-500 hover:bg-blue-600 text-white"
-                            onClick={() => handleReturnBook(record)}
-                          >
-                            Xác nhận
-                          </Button>
-                        )}
                       </TableCell>
                       <TableCell className={overdueStatus.statusClass}>{overdueStatus.label}</TableCell>
                     </TableRow>
@@ -454,77 +410,9 @@ const BorrowRecordList = () => {
         )}
       </Pagination>
 
-      {/* Return Book Confirmation Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Check className="h-5 w-5 text-green-500" />
-              Xác nhận trả sách
-            </DialogTitle>
-            <DialogDescription>
-              Bạn có chắc chắn muốn xác nhận trả sách này? Hành động này không thể hoàn tác.
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedRecord && (
-            <div className="py-4">
-              <div className="rounded-lg border p-4 space-y-3">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm font-medium">Tên sách:</div>
-                  <div className="flex items-center">
-                    <BookOpen className="h-4 w-4 mr-1 text-blue-500" />
-                    {selectedRecord.book_id?.title || "Không rõ"}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm font-medium">Tác giả:</div>
-                  <div>{selectedRecord.book_id?.author || "Không rõ"}</div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm font-medium">Người mượn:</div>
-                  <div className="flex items-center">
-                    <User className="h-4 w-4 mr-1 text-blue-500" />
-                    {selectedRecord.user_id?.full_name || "Không rõ"}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm font-medium">Ngày mượn:</div>
-                  <div>{new Date(selectedRecord.borrow_date).toLocaleString()}</div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-sm font-medium">Ngày hết hạn:</div>
-                  <div>{new Date(selectedRecord.due_date).toLocaleString()}</div>
-                </div>
-
-                {getOverdueStatus(selectedRecord).isOverdue && (
-                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md flex items-start">
-                    <AlertCircle className="h-5 w-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-red-700 font-medium">Sách đã quá hạn!</p>
-                      <p className="text-sm text-red-600">
-                        Sách này đã quá hạn trả. Vui lòng kiểm tra tình trạng sách trước khi xác nhận.
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          <DialogFooter className="sm:justify-end">
-            <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
-              Hủy
-            </Button>
-            <Button type="button" className="bg-blue-500 hover:bg-blue-600 text-white" onClick={confirmReturnBook}>
-              <Check className="mr-1 h-4 w-4" />
-              Xác nhận trả sách
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+     
     </div>
   )
 }
 
-export default BorrowRecordList
+export default BorrowRecordListByUserId

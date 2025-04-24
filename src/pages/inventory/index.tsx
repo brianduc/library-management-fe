@@ -26,6 +26,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Book } from "@/hooks/api/book/use-get-books"
 import useGetCategories from "@/hooks/api/category/use-get-categories"
 import { useRouter } from "next/router"
+import { useRequireBorrowRequest } from "@/hooks/api/borrow-request/use-requireBorrowRequest"
+import { useAtomValue } from "jotai/react"
+import { userInfoAtom } from "@/stores/auth"
+import { showErrorToast, showSuccessToast } from "@/components/common/toast/toast"
+import { Button } from "@/components/ui/button"
 
 interface BookWithCategory extends Book {
   categoryName?: string
@@ -35,6 +40,10 @@ const InventoryPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState<string>("")
   const router = useRouter()
+  const { requireBorrow } = useRequireBorrowRequest()
+  const user = useAtomValue(userInfoAtom);
+
+
 
   // Fetch books data
   const {
@@ -210,6 +219,28 @@ const InventoryPage = () => {
                   Còn {book.quantity_available}/{book.quantity_total} quyển
                 </span>
               </CardFooter>
+              <Button
+                size="sm"
+                className="mt-2"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  try {
+                    if (!user?._id) {
+                      showErrorToast("Người dùng không hợp lệ.");
+                      return;
+                    }
+                    await requireBorrow({ user_id: user._id, book_id: book._id });
+                    showSuccessToast("Yêu cầu mượn sách đã được gửi!");
+                  } catch (err) {
+                    const message = (err as any)?.response?.data?.message || "Đã xảy ra lỗi";
+
+                    showErrorToast(message);
+                  }
+                }}
+              >
+                Yêu cầu mượn
+              </Button>
+
             </Card>
           ))}
         </div>

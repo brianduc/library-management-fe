@@ -1,15 +1,16 @@
 import { useAxios } from "@/hooks/api/use-axios";
 import { useState } from "react";
 
-export const useGetAllBorrowRequest = () => {
+export const useGetAllBorrowRequestByUserId = (userId:string) => {
   const axios = useAxios(); 
   const [loading, setLoading] = useState(false);
   const [borrowRequests, setBorrowRequests] = useState<any[]>([]); 
 
-  const fetchBorrowRequests = async () => {
+  const fetchBorrowRequestByUserId = async () => {
+
     try {
       setLoading(true);
-      const response = await axios.get("borrow-requests"); 
+      const response = await axios.get(`borrow-requests/${userId}`); 
       console.log("API response:", response);
       setBorrowRequests(response.data.data); 
     } catch (error) {
@@ -19,5 +20,5 @@ export const useGetAllBorrowRequest = () => {
     }
   };
 
-  return { fetchBorrowRequests, borrowRequests, loading };
+  return { fetchBorrowRequestByUserId, borrowRequests, loading };
 };

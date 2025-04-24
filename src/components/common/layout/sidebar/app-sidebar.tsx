@@ -10,7 +10,9 @@ import {
   SquareTerminal,
   Book,
   BookOpen, 
-  Library 
+  Library, 
+  BookOpenCheck,
+  ClipboardList
 } from "lucide-react"
 
 import { NavMain } from "@/components/common/layout/sidebar/nav-main"
@@ -61,12 +63,20 @@ const data = {
       role: ["admin"],
     },
     {
+      name: "Borrow Request",
+      url: "/borrow-request",
+      icon: ClipboardList,
+      title: "Lịch sử yêu cầu mượn",
+      role: ["admin", "staff", "member"],
+    },
+    {
       name: "Borrow Record",
       url: "/borrow-record",
-      icon: AudioWaveform,
-      title: "Quản lý lịch sử mượn",
-      role: ["admin", "staff"],
+      icon: BookOpenCheck,
+      title: "Lịch sử mượn",
+      role: ["admin", "staff", "member"],
     },
+   
     {
       name: "Books",
       url: "/books",
