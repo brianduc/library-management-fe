@@ -8,6 +8,7 @@ import {
   Map,
   PieChart,
   SquareTerminal,
+  DollarSign,
 } from "lucide-react"
 
 import { NavMain } from "@/components/common/layout/sidebar/nav-main"
@@ -58,6 +59,12 @@ const data = {
       url: "/users",
       icon: Bot,
       title: "Quản lý hội viên",
+    },
+    {
+      name: "Fines",
+      url: "/fine",
+      icon: DollarSign,
+      title: "Quản lý phạt",
     },
   ],
   projects: [
