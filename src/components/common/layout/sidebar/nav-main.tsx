@@ -43,16 +43,14 @@ export function NavMain({
     <SidebarGroup>
       <SidebarMenu>
         {items
-          ?.filter((item) => item.role.includes(userRole))
+          ?.filter((item) => item.role.includes(userRole!))
           .map((item) => {
             // Determine if the main item is active
             const isActive = pathname && item.url && pathname.includes(item.url)
             if (item?.items && item?.items.length > 0) {
               // Filter sub-items by user role
-              const filteredSubItems = item.items.filter(
-                (subItem) => item.role.includes(userRole)
-              )
-              if (filteredSubItems.length === 0) return null
+              
+              if (items.length === 0) return null
               return (
                 <Collapsible
                   key={item.title}
@@ -73,7 +71,7 @@ export function NavMain({
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {filteredSubItems.map((subItem) => {
+                        {items.map((subItem) => {
                           const isSubActive =
                             pathname &&
                             subItem.url &&

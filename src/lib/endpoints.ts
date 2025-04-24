@@ -4,6 +4,7 @@ export class Endpoints {
     LOGIN: "auth/login",
     LOGOUT: "auth/logout",
     REFRESH: "auth/refresh",
+    CHANGE_PASSWORD_FIRST_TIME: "auth/change-password-first-time",
   }
   static readonly Users = {
     GET_ALL: "users",

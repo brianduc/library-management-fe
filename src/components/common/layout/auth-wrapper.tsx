@@ -18,8 +18,9 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
   useEffect(() => {
     const token = localStorage.getItem(Constants.API_TOKEN_KEY);
     const isLoginPage = router.pathname === "/login";
+    const isRegisterPage = router.pathname === "/register";
     if (!token) {
-      if (!isLoginPage) {
+      if (!isLoginPage && !isRegisterPage) {
         router.replace("/login");
       }
       return;
@@ -29,11 +30,11 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
       const { exp } = jwtDecode<{ exp: number }>(token);
       if (Date.now() >= exp * 1000) {
         localStorage.removeItem(Constants.API_TOKEN_KEY);
-        if (!isLoginPage) {
+        if (!isLoginPage && !isRegisterPage) {
           router.replace("/login");
         }
       } else {
-        if (isLoginPage) {
+        if (isLoginPage || isRegisterPage) {
           router.replace("/dashboard");
         }
       }
