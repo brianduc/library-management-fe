@@ -5,4 +5,11 @@ export class Endpoints {
     LOGOUT: "auth/logout",
     REFRESH: "auth/refresh",
   };
+
+  static readonly BorrowRequest = {
+    API: "borrow-requests/",
+  };
+  static readonly BorrowRecord = {
+    API: "borrow-records/",
+  };
 }

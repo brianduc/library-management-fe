@@ -53,24 +53,20 @@ const data = {
       title: "Playground",
       url: "/register",
       icon: SquareTerminal,
-      isActive: true,
     },
     {
-      title: "Models",
-      url: "#",
+      title: "Mượn sách",
+      url: "/",
       icon: Bot,
       items: [
         {
-          title: "Genesis",
-          url: "#",
+          title: "Yêu cầu mươn sách",
+          url: "/borrow-request",
+          isActive: true,
         },
         {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
+          title: "Tình trạng mượn sách",
+          url: "/borrow-record",
         },
       ],
     },
