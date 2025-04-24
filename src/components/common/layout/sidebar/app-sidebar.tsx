@@ -9,6 +9,8 @@ import {
   PieChart,
   SquareTerminal,
   Book,
+  BookOpen, 
+  Library 
 } from "lucide-react"
 
 import { NavMain } from "@/components/common/layout/sidebar/nav-main"
@@ -24,7 +26,6 @@ import Image from "next/image"
 import { useAtomValue } from "jotai/react"
 import { userInfoAtom } from "@/stores/auth"
 
-// This is sample data.
 const data = {
   teams: [
     {
@@ -43,7 +44,7 @@ const data = {
       plan: "Free",
     },
   ],
-  // Navigation items for the sidebar
+
   navMain: [
     {
       name: "Dashboard",
@@ -76,10 +77,17 @@ const data = {
     {
       name: "Categories",
       url: "/categories",
-      icon: Book,
+      icon: BookOpen,
       title: "Quản lý danh mục",
       role: ["admin", "staff"],
     },
+    {
+      name: "Inventory",
+      url: "/inventory",
+      icon: Library,
+      title: "Kho sách",
+      role: ["admin", "staff", "member"]
+    }
   ],
   projects: [
     {
