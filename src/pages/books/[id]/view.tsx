@@ -1,7 +1,6 @@
 import React from "react"
 import { useRouter } from "next/router"
 import useGetBookById from "@/hooks/api/book/use-get-book-by-id"
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -19,63 +18,66 @@ const BookDetails = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-[60vh] p-4">
-      <Card className="w-full max-w-xl">
-        <CardHeader className="flex flex-col items-center gap-2">
-          <Avatar className="h-20 w-20 mb-2">
+    <div className="flex justify-center items-center min-h-[60vh] p-6">
+      <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden border border-gray-100">
+        {/* Book Image Section */}
+        <div className="flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200 md:w-1/3 p-8">
+          <Avatar className="h-32 w-32 mb-4 shadow-lg border-4 border-white">
             <AvatarImage src={"/lms_logo.png"} alt={book.title} />
-            <AvatarFallback>{book.title.charAt(0)}</AvatarFallback>
+            <AvatarFallback className="text-3xl">{book.title.charAt(0)}</AvatarFallback>
           </Avatar>
-          <CardTitle className="text-2xl font-bold">{book.title}</CardTitle>
-          <div className="flex gap-2 mt-1">
-            <Badge>
-              {book.status === "available" ? "Sẵn có" :
-               book.status === "borrowed" ? "Đã mượn" :
-               book.status === "damaged" ? "Hư hỏng" :
-               "Mất"}
-            </Badge>
+          <Badge className="mt-2 text-base px-4 py-1 rounded-full">
+            {book.status === "available" ? "Sẵn có" :
+             book.status === "borrowed" ? "Đã mượn" :
+             book.status === "damaged" ? "Hư hỏng" :
+             "Mất"}
+          </Badge>
+        </div>
+        {/* Book Details Section */}
+        <div className="flex-1 p-8 flex flex-col justify-between">
+          <div>
+            <h1 className="text-3xl font-extrabold text-blue-900 mb-2">{book.title}</h1>
+            <div className="grid grid-cols-1 gap-3 text-base text-gray-700">
+              <div>
+                <span className="font-semibold text-blue-700">Tác giả:</span> {book.author}
+              </div>
+              <div>
+                <span className="font-semibold text-blue-700">Danh mục:</span> {book.category_id}
+              </div>
+              <div>
+                <span className="font-semibold text-blue-700">Tổng số lượng:</span> {book.quantity_total}
+              </div>
+              <div>
+                <span className="font-semibold text-blue-700">Số lượng sẵn có:</span> {book.quantity_available}
+              </div>
+              <div>
+                <span className="font-semibold text-blue-700">Mã QR:</span> {book.qr_code || "Không có"}
+              </div>
+              <div>
+                <span className="font-semibold text-blue-700">Mô tả:</span> {book.description || "Không có"}
+              </div>
+              <div>
+                <span className="font-semibold text-blue-700">Ẩn:</span> {book.is_hidden ? "Có" : "Không"}
+              </div>
+              <div>
+                <span className="font-semibold text-blue-700">Ngày tạo:</span> {new Date(book.createdAt).toLocaleDateString("vi-VN")}
+              </div>
+              <div>
+                <span className="font-semibold text-blue-700">Ngày cập nhật:</span> {new Date(book.updatedAt).toLocaleDateString("vi-VN")}
+              </div>
+            </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 gap-4 text-base">
-            <div>
-              <span className="font-medium">Tác giả:</span> {book.author}
-            </div>
-            <div>
-              <span className="font-medium">Danh mục:</span> {book.category_id}
-            </div>
-            <div>
-              <span className="font-medium">Tổng số lượng:</span> {book.quantity_total}
-            </div>
-            <div>
-              <span className="font-medium">Số lượng sẵn có:</span> {book.quantity_available}
-            </div>
-            <div>
-              <span className="font-medium">Mã QR:</span> {book.qr_code || "Không có"}
-            </div>
-            <div>
-              <span className="font-medium">Mô tả:</span> {book.description || "Không có"}
-            </div>
-            <div>
-              <span className="font-medium">Ẩn:</span> {book.is_hidden ? "Có" : "Không"}
-            </div>
-            <div>
-              <span className="font-medium">Ngày tạo:</span> {new Date(book.createdAt).toLocaleDateString("vi-VN")}
-            </div>
-            <div>
-              <span className="font-medium">Ngày cập nhật:</span> {new Date(book.updatedAt).toLocaleDateString("vi-VN")}
-            </div>
+          <div className="flex justify-end gap-4 mt-8">
+            <Button onClick={() => router.push(`/books/${book._id}/edit`)} className="px-6 py-2 text-base font-semibold">
+              Chỉnh sửa
+            </Button>
+            <Button variant="outline" onClick={() => router.push("/books")}
+              className="px-6 py-2 text-base font-semibold border-blue-500 text-blue-700 hover:bg-blue-50">
+              Quay lại
+            </Button>
           </div>
-        </CardContent>
-        <CardFooter className="flex justify-end gap-3 mt-4">
-          <Button onClick={() => router.push(`/books/${book._id}/edit`)}>
-            Chỉnh sửa
-          </Button>
-          <Button variant="outline" onClick={() => router.push("/books")}>
-            Quay lại
-          </Button>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }
