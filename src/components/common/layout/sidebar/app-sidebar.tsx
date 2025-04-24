@@ -8,6 +8,7 @@ import {
   Map,
   PieChart,
   SquareTerminal,
+  Book
 } from "lucide-react"
 
 import { NavMain } from "@/components/common/layout/sidebar/nav-main"
@@ -68,6 +69,18 @@ const data = {
       title: "Quản lý lịch sử mượn",
       role: ["admin", "staff"],
     },
+    {
+      name: "Books",
+      url: "/books",
+      icon: Book,
+      title: "Quản lý sách",
+    },
+    {
+      name: "Categories",
+      url: "/categories",
+      icon: Book,
+      title: "Quản lý danh mục",
+    }
   ],
   projects: [
     {

@@ -13,4 +13,18 @@ export class Endpoints {
     UPDATE: (id: string) => `users/${id}`,
     DELETE: (id: string) => `users/${id}`,
   }
+  static readonly Books = {
+    GET_ALL: "books",
+    GET_BY_ID: (id: string) => `books/${id}`,
+    CREATE: "books",
+    UPDATE: (id: string) => `books/${id}`,
+    DELETE: (id: string) => `books/${id}`,
+  }
+  static readonly Categories = {
+    GET_ALL: 'categories',
+    GET_BY_ID: (id: string) => `categories/${id}`,
+    CREATE: 'categories',
+    UPDATE: (id: string) => `categories/${id}`,
+    DELETE: (id: string) => `categories/${id}`,
+  }
 }
