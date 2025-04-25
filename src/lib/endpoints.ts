@@ -30,7 +30,8 @@ export class Endpoints {
     DELETE: (id: string) => `users/${id}`,
   }
   static readonly Books = {
-    GET_ALL: "books/v2",
+    GET_ALL: "books",
+    GET_ALL_V2: "books/v2",
     GET_BY_ID: (id: string) => `books/${id}`,
     CREATE: "books",
     UPDATE: (id: string) => `books/${id}`,

@@ -2,7 +2,6 @@ import React from "react"
 import { useRouter } from "next/router"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -16,7 +15,7 @@ import {
 } from "@/components/ui/form"
 import useAddFine from "@/hooks/api/fine/fine-add-fine"
 import useGetUsersV2 from "@/hooks/api/user/use-get-users-v2"
-import useGetBooks from "@/hooks/api/book/use-get-books"
+import useGetBooksV2 from "@/hooks/api/book/use-get-books-v2"
 import {
   showErrorToast,
   showSuccessToast,
@@ -40,11 +39,16 @@ const formSchema = z.object({
 const AddFine = () => {
   const router = useRouter()
   const { addFine, loading } = useAddFine()
-  const { data: users, error: usersError, isLoading: usersLoading } = useGetUsersV2()
-  const { data: books, error: booksError, isLoading: booksLoading } = useGetBooks()
-
-  console.log("Users data:", users)
-  console.log("Books data:", books)
+  const {
+    data: users,
+    error: usersError,
+    isLoading: usersLoading,
+  } = useGetUsersV2()
+  const {
+    data: books,
+    error: booksError,
+    isLoading: booksLoading,
+  } = useGetBooksV2()
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -58,21 +62,18 @@ const AddFine = () => {
   })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log("Form values before submit:", values)
     try {
       const submitData = {
         ...values,
         book_id: values.book_id,
         user_id: values.user_id,
         amount: parseInt(values.amount.toString()),
-        is_paid: values.is_paid || false
+        is_paid: values.is_paid || false,
       }
-      console.log("Submit data:", submitData)
       await addFine({ data: submitData })
       showSuccessToast("Thêm phạt thành công!")
       router.push("/fine")
     } catch (error) {
-      console.error("Submit error:", error)
       showErrorToast("Thêm phạt thất bại!")
     }
   }
@@ -128,11 +129,12 @@ const AddFine = () => {
                     <SelectValue placeholder="Chọn sách" />
                   </SelectTrigger>
                   <SelectContent>
-                    {Array.isArray(books) && books.map((book) => (
-                      <SelectItem key={book._id} value={book._id}>
-                        {book.title} - {book.author}
-                      </SelectItem>
-                    ))}
+                    {Array.isArray(books) &&
+                      books.map((book) => (
+                        <SelectItem key={book._id} value={book._id}>
+                          {book.title} - {book.author}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -147,9 +149,9 @@ const AddFine = () => {
             <FormItem>
               <FormLabel>Số tiền phạt</FormLabel>
               <FormControl>
-                <Input 
-                  type="number" 
-                  placeholder="Nhập số tiền phạt" 
+                <Input
+                  type="number"
+                  placeholder="Nhập số tiền phạt"
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
@@ -171,7 +173,7 @@ const AddFine = () => {
             </FormItem>
           )}
         />
-        
+
         <div className="flex gap-3 justify-end pt-2">
           <Button
             type="submit"

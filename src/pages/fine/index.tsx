@@ -17,8 +17,6 @@ import {
 } from "@/components/ui/pagination"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -29,13 +27,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
-import {
-  MoreHorizontalIcon,
   PlusIcon,
   ChevronUpIcon,
   ChevronDownIcon,
@@ -52,13 +43,11 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import fineGetFines from "@/hooks/api/fine/fine-get-fines"
-import { Endpoints } from "@/lib/endpoints"
 import { usePayFine } from "@/hooks/api/fine/fine-pay-fine"
 import {
   showErrorToast,
   showSuccessToast,
 } from "@/components/common/toast/toast"
-import useGetBooks from "@/hooks/api/book/use-get-books"
 import { Fine } from "@/hooks/api/fine/fine-get-fines"
 
 const PAGE_SIZE = 10

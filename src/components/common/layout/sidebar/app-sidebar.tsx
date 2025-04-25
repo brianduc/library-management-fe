@@ -12,7 +12,7 @@ import {
   BookOpen, 
   Library, 
   BookOpenCheck,
-  ClipboardList
+  ClipboardList,
   DollarSign,
 } from "lucide-react"
 
@@ -77,15 +77,6 @@ const data = {
       title: "Lịch sử mượn",
       role: ["admin", "staff", "member"],
     },
-   
-    {
-      name: "Borrowing",
-      url: "/borrow-request",
-      icon: Library,
-      title: "Quản lý yêu cầu mượn sách",
-      role: ["admin", "staff", "member"],
-    },
-
     {
       name: "Books",
       url: "/books",
@@ -112,6 +103,7 @@ const data = {
       url: "/fine",
       icon: DollarSign,
       title: "Quản lý phạt",
+      role: ["admin", "staff", "member"],
     },
   ],
   projects: [
