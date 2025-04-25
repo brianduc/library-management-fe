@@ -13,6 +13,7 @@ import {
   Library, 
   BookOpenCheck,
   ClipboardList
+  DollarSign,
 } from "lucide-react"
 
 import { NavMain } from "@/components/common/layout/sidebar/nav-main"
@@ -105,6 +106,12 @@ const data = {
       icon: Library,
       title: "Kho sách",
       role: ["admin", "staff", "member"],
+    },
+    {
+      name: "Fines",
+      url: "/fine",
+      icon: DollarSign,
+      title: "Quản lý phạt",
     },
   ],
   projects: [
