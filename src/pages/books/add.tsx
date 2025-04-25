@@ -28,6 +28,7 @@ import {
 } from "@/components/common/toast/toast"
 import useGetCategories from "@/hooks/api/category/use-get-categories"
 import { Skeleton } from "@/components/ui/skeleton"
+import uploadFile from "@/helpers/uploadFile"
 
 export const bookSchema = z.object({
   title: z.string().min(1, "Tiêu đề là bắt buộc"),
@@ -48,6 +49,8 @@ const AddBook = () => {
   const { addBook, loading } = useAddBook()
   const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useGetCategories()
 
+  const [image, setImage] = React.useState<File | null>(null)
+
   const form = useForm<BookData>({
     resolver: zodResolver(bookSchema),
     defaultValues: {
@@ -64,15 +67,29 @@ const AddBook = () => {
   })
 
   const onSubmit = async (values: BookData) => {
-    await addBook({ data: values })
-      .then(() => {
-        showSuccessToast("Thêm sách thành công!")
-        router.push("/books")
-      })
-      .catch((error) => {
-        showErrorToast(error?.response?.data?.message || "Thêm sách thất bại!")
-      })
+    try {
+      let imageUrl = ""
+      if (image) {
+        const uploadResult = await uploadFile(image)
+        imageUrl = uploadResult.secure_url
+      }
+
+      const payload = {
+        ...values,
+        image_url: imageUrl,
+      }
+      console.log("payload: ", payload)
+
+
+
+      await addBook({ data: payload })
+      showSuccessToast("Thêm sách thành công!")
+      router.push("/books")
+    } catch (error: any) {
+      showErrorToast(error?.response?.data?.message || "Thêm sách thất bại!")
+    }
   }
+
 
   return (
     <Form {...form}>
@@ -120,6 +137,30 @@ const AddBook = () => {
             </FormItem>
           )}
         />
+        <FormItem>
+          <FormLabel>Ảnh bìa</FormLabel>
+          <FormControl>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  setImage(e.target.files[0])
+                }
+              }}
+            />
+          </FormControl>
+        </FormItem>
+        {image && (
+          <img
+            src={URL.createObjectURL(image)}
+            alt="Preview"
+            className="h-40 object-cover mt-2 rounded"
+          />
+        )}
+
+
+
         <FormField
           control={form.control}
           name="quantity_total"
@@ -169,9 +210,6 @@ const AddBook = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="available">Sẵn có</SelectItem>
-                    <SelectItem value="borrowed">Đã mượn</SelectItem>
-                    <SelectItem value="damaged">Hư hỏng</SelectItem>
-                    <SelectItem value="lost">Mất</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
