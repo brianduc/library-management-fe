@@ -49,6 +49,7 @@ const SORTABLE_COLUMNS = [
 const FineAdmin = () => {
   const user = useAtomValue(userInfoAtom);
   const { data, error, isLoading } = fineGetFineByUser()
+  console.log(data)
   const { payFine, loading: payLoading } = usePayFine()
   const [page, setPage] = React.useState(1)
   const [search, setSearch] = React.useState("")

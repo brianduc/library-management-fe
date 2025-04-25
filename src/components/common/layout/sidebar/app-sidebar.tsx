@@ -103,7 +103,14 @@ const data = {
       url: "/fine",
       icon: DollarSign,
       title: "Quản lý phạt",
-      role: ["admin", "staff", "member"],
+      role: ["admin", "staff", ],
+    },
+    {
+      name: "Fines",
+      url: "/fine/me",
+      icon: DollarSign,
+      title: "Quản lý phạt của tôi",
+      role: [ "member"],
     },
   ],
   projects: [
