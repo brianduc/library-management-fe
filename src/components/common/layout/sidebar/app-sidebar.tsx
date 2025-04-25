@@ -13,6 +13,7 @@ import {
   Library, 
   BookOpenCheck,
   ClipboardList
+  DollarSign,
 } from "lucide-react"
 
 import { NavMain } from "@/components/common/layout/sidebar/nav-main"
@@ -78,6 +79,14 @@ const data = {
     },
    
     {
+      name: "Borrowing",
+      url: "/borrow-request",
+      icon: Library,
+      title: "Quản lý yêu cầu mượn sách",
+      role: ["admin", "staff", "member"],
+    },
+
+    {
       name: "Books",
       url: "/books",
       icon: Book,
@@ -96,8 +105,14 @@ const data = {
       url: "/inventory",
       icon: Library,
       title: "Kho sách",
-      role: ["admin", "staff", "member"]
-    }
+      role: ["admin", "staff", "member"],
+    },
+    {
+      name: "Fines",
+      url: "/fine",
+      icon: DollarSign,
+      title: "Quản lý phạt",
+    },
   ],
   projects: [
     {
