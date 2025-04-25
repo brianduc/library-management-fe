@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { useAtomValue } from "jotai/react"
 import { userInfoAtom } from "@/stores/auth"
+import ReviewForm from "@/components/features/review/review"
 
 const BookDetails = () => {
   const user = useAtomValue(userInfoAtom);
@@ -120,10 +121,11 @@ const BookDetails = () => {
           </div>
         </div>
       )}
+      <div className="mt-8 max-w-3xl mx-auto">
+        <ReviewForm bookId={id as string} />
+      </div>
     </>
-  )  
-
-
+  )
 }
 
 export default BookDetails
