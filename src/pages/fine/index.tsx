@@ -58,6 +58,8 @@ import {
   showErrorToast,
   showSuccessToast,
 } from "@/components/common/toast/toast"
+import useGetBooks from "@/hooks/api/book/use-get-books"
+import { Fine } from "@/hooks/api/fine/fine-get-fines"
 
 const PAGE_SIZE = 10
 
@@ -80,11 +82,7 @@ const FinePage = () => {
   const { data, error, isLoading } = fineGetFines()
   const { payFine, loading: payLoading } = usePayFine()
   console.log("Raw data:", data)
-  console.log("Book titles:", data?.map(fine => ({
-    id: fine._id,
-    bookTitle: fine.book_id?.title,
-    bookId: fine.book_id?._id
-  })))
+ 
   const [page, setPage] = React.useState(1)
   const [search, setSearch] = React.useState("")
   const [status, setStatus] = React.useState("all")
@@ -92,16 +90,16 @@ const FinePage = () => {
     [] as { key: string; direction: "asc" | "desc" | "none" }[],
   )
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
-  const [fineToDelete, setFineToDelete] = React.useState<any | null>(null)
+  const [fineToDelete, setFineToDelete] = React.useState<Fine | null>(null)
   const router = useRouter()
 
   // Filter and search
-  const filtered = data?.filter((fine) => {
+  const filtered = data?.filter((fine: Fine) => {
     const matchesSearch =
-      (fine.user_id?.full_name?.toLowerCase().includes(search.toLowerCase()) || 
-      fine.borrow_record_id?.book_id?.title?.toLowerCase().includes(search.toLowerCase())
+      (fine.user_id?.email?.toLowerCase().includes(search.toLowerCase()) || 
+      (fine.borrow_record_id?.book_id?.title || fine.book_id?.title)?.toLowerCase().includes(search.toLowerCase())
     ) 
-          const matchesStatus = status === "all" ? true : 
+    const matchesStatus = status === "all" ? true : 
       status === "false" ? !fine.is_paid :
       status === "true" ? fine.is_paid : false
     return matchesSearch && matchesStatus
@@ -110,7 +108,7 @@ const FinePage = () => {
   // Multi-column sort logic
   const sorted = React.useMemo(() => {
     if (!filtered || sorts.length === 0) return filtered
-    return [...filtered].sort((a: any, b: any) => {
+    return [...filtered].sort((a: Fine, b: Fine) => {
       for (const sort of sorts) {
         if (sort.direction === "none") continue
         let aValue: any = (a as any)[sort.key]
@@ -146,7 +144,7 @@ const FinePage = () => {
     })
   }
 
-  const handleDeleteClick = (fine: any) => {
+  const handleDeleteClick = (fine: Fine) => {
     setFineToDelete(fine)
     setDeleteDialogOpen(true)
   }
@@ -246,11 +244,11 @@ const FinePage = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              paginated?.map((fine, idx) => (
+              paginated?.map((fine: Fine, idx: number) => (
                 <TableRow key={fine._id}>
                   <TableCell>{(page - 1) * PAGE_SIZE + idx + 1}</TableCell>
-                  <TableCell>{fine.user_id?.full_name || "N/A"}</TableCell>
-                  <TableCell>{fine.borrow_record_id?.book_id?.title || fine.book_id?.title}</TableCell>
+                  <TableCell>{fine.user_id?.email || "N/A"}</TableCell>
+                  <TableCell>{fine.borrow_record_id?.book_id?.title || fine.book_id?.title || "N/A"}</TableCell>
                   <TableCell>{fine.amount.toLocaleString("vi-VN")} VNĐ</TableCell>
                   <TableCell>{fine.reason}</TableCell>
                   <TableCell>
@@ -332,7 +330,7 @@ const FinePage = () => {
             <DialogTitle>Xác nhận xóa phạt</DialogTitle>
           </DialogHeader>
           <div>
-            Bạn có chắc chắn muốn xóa phạt của hội viên <b>{fineToDelete?.user_name}</b>{" "}
+            Bạn có chắc chắn muốn xóa phạt của hội viên <b>{fineToDelete?.user_id?.email}</b>{" "}
             không?
           </div>
           <DialogFooter>
@@ -356,3 +354,4 @@ const FinePage = () => {
 }
 
 export default FinePage
+
