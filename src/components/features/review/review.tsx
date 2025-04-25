@@ -93,7 +93,7 @@ export default function ReviewForm({ bookId, onSubmit }: ReviewFormProps) {
     <section className="py-8 bg-gray-50">
       <div className="max-w-4xl mx-auto px-4">
         {/* Add/Edit Review Form */}
-        { userReviews?.length === 0 && !editingReview && (
+        { userReviews?.length === 0 && !editingReview && allReviews && allReviews.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
             <div className="flex items-start space-x-4">
               <img
