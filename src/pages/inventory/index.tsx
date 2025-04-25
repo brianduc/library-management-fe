@@ -29,7 +29,10 @@ import { useRouter } from "next/router"
 import { useRequireBorrowRequest } from "@/hooks/api/borrow-request/use-requireBorrowRequest"
 import { useAtomValue } from "jotai/react"
 import { userInfoAtom } from "@/stores/auth"
-import { showErrorToast, showSuccessToast } from "@/components/common/toast/toast"
+import {
+  showErrorToast,
+  showSuccessToast,
+} from "@/components/common/toast/toast"
 import { Button } from "@/components/ui/button"
 
 interface BookWithCategory extends Book {
@@ -41,36 +44,28 @@ const InventoryPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>("")
   const router = useRouter()
   const { requireBorrow } = useRequireBorrowRequest()
-  const user = useAtomValue(userInfoAtom);
-
-
+  const user = useAtomValue(userInfoAtom)
 
   // Fetch books data
   const {
     data: booksData,
     error: booksError,
     isLoading: booksLoading,
-  } = useSWR<{
-    books: Book[]
-    totalBooks: number
-    totalPages: number
-    currentPage: number
-  }>(Endpoints.Books.GET_ALL, axiosFetcher)
-
-  console.log(booksData)
+  } = useSWR<{ books: Book[] }>(Endpoints.Books.GET_ALL, axiosFetcher)
   // Fetch categories data
-  const {
-    data: categories,
-  } = useGetCategories()
+  const { data: categories } = useGetCategories()
+  
 
   // Process books data to include category names
   const books: BookWithCategory[] =
-    booksData?.books?.map((book) => ({
+    booksData?.map((book) => ({
       ...book,
       categoryName:
         categories?.find((cat) => cat._id === book.category_id)?.name ||
         "Không có danh mục",
     })) || []
+
+    
 
   // Filter books based on search and category filters
   const filteredBooks = books.filter((book) => {
@@ -170,79 +165,82 @@ const InventoryPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {filteredBooks.map((book) => (
-          <Card
-          key={book._id}
-          className="overflow-hidden flex flex-col cursor-pointer"
-          onClick={() => router.push(`/books/${book._id}/view`)}
-        >
-          <div className="h-48 bg-muted flex items-center justify-center">
-            {book.image_url ? (
-              <img
-                src={book.image_url}
-                alt={`Cover for ${book.title}`}
-                className="h-32 object-contain"
-              />
-            ) : (
-              <div className="h-16 w-16 text-muted-foreground/30 flex items-center justify-center">
-                <span className="text-sm">No Image</span>
-              </div>
-            )}
-          </div>
-          <CardHeader>
-            <CardTitle className="line-clamp-2">{book.title}</CardTitle>
-            <CardDescription>{book.author}</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-grow">
-            <div className="flex flex-wrap gap-2 mb-3">
-              <Badge variant="secondary">{book.categoryName}</Badge>
-              <Badge variant="outline">
-                {book.status === "available"
-                  ? "Sẵn có"
-                  : book.status === "damaged"
-                  ? "Hư hỏng"
-                  : book.status === "out_of_stock"
-                  ? "Hết hàng"
-                  : ""}
-              </Badge>
-            </div>
-            <p className="text-sm text-muted-foreground line-clamp-3">
-              {book.description || "Không có mô tả"}
-            </p>
-          </CardContent>
-        
-          <CardFooter>
-            <span className="text-sm font-medium">
-              Còn {book.quantity_available}/{book.quantity_total} quyển
-            </span>
-          </CardFooter>
-          {book.status === "available" && book.quantity_available > 0 ? (
-            <Button
-              size="sm"
-              className="mt-2"
-              onClick={async (e) => {
-                e.stopPropagation();
-                try {
-                  if (!user?._id) {
-                    showErrorToast("Người dùng không hợp lệ.");
-                    return;
-                  }
-                  await requireBorrow({ user_id: user._id, book_id: book._id });
-                  showSuccessToast("Yêu cầu mượn sách đã được gửi!");
-                } catch (err) {
-                  const message = (err as any)?.response?.data?.message || "Đã xảy ra lỗi";
-                  showErrorToast(message);
-                }
-              }}
+            <Card
+              key={book._id}
+              className="overflow-hidden flex flex-col cursor-pointer"
+              onClick={() => router.push(`/books/${book._id}/view`)}
             >
-              Yêu cầu mượn
-            </Button>
-          ) : (
-            <Button className="w-full" variant="outline" disabled>
-              Không có sẵn
-            </Button>
-          )}
-        </Card>
-        
+              <div className="h-48 bg-muted flex items-center justify-center">
+                {book.image_url ? (
+                  <img
+                    src={book.image_url}
+                    alt={`Cover for ${book.title}`}
+                    className="h-32 object-contain"
+                  />
+                ) : (
+                  <div className="h-16 w-16 text-muted-foreground/30 flex items-center justify-center">
+                    <span className="text-sm">No Image</span>
+                  </div>
+                )}
+              </div>
+              <CardHeader>
+                <CardTitle className="line-clamp-2">{book.title}</CardTitle>
+                <CardDescription>{book.author}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <Badge variant="secondary">{book.categoryName}</Badge>
+                  <Badge variant="outline">
+                    {book.status === "available"
+                      ? "Sẵn có"
+                      : book.status === "damaged"
+                        ? "Hư hỏng"
+                        : book.status === "out_of_stock"
+                          ? "Hết hàng"
+                          : ""}
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground line-clamp-3">
+                  {book.description || "Không có mô tả"}
+                </p>
+              </CardContent>
+
+              <CardFooter>
+                <span className="text-sm font-medium">
+                  Còn {book.quantity_available}/{book.quantity_total} quyển
+                </span>
+              </CardFooter>
+              {book.status === "available" && book.quantity_available > 0 ? (
+                <Button
+                  size="sm"
+                  className="mt-2"
+                  onClick={async (e) => {
+                    e.stopPropagation()
+                    try {
+                      if (!user?._id) {
+                        showErrorToast("Người dùng không hợp lệ.")
+                        return
+                      }
+                      await requireBorrow({
+                        user_id: user._id,
+                        book_id: book._id,
+                      })
+                      showSuccessToast("Yêu cầu mượn sách đã được gửi!")
+                    } catch (err) {
+                      const message =
+                        (err as any)?.response?.data?.message || "Đã xảy ra lỗi"
+                      showErrorToast(message)
+                    }
+                  }}
+                >
+                  Yêu cầu mượn
+                </Button>
+              ) : (
+                <Button className="w-full" variant="outline" disabled>
+                  Không có sẵn
+                </Button>
+              )}
+            </Card>
           ))}
         </div>
       )}
